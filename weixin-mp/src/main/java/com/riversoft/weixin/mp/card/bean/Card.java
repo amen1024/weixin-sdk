@@ -2,6 +2,7 @@ package com.riversoft.weixin.mp.card.bean;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.riversoft.weixin.common.exception.WxRuntimeException;
 
 /**
  * Created by exizhai on 11/30/2015.
@@ -29,6 +30,32 @@ public class Card {
 
     @JsonProperty("discount")
     private Discount discount;
+    
+    /**
+     * 自动根据类型解析出baseInfo
+     * @return
+     */
+    public BaseInfo getBaseInfo(){
+    	if(this.member != null){
+    		return this.member.getBaseInfo();
+    	}
+    	if(this.cash != null){
+    		return this.cash.getBaseInfo();
+    	}
+    	if(this.gift != null){
+    		return this.gift.getBaseInfo();
+    	}
+    	if(this.groupon != null){
+    		return this.groupon.getBaseInfo();
+    	}
+    	if(this.coupon != null){
+    		return this.coupon.getBaseInfo();
+    	}
+    	if(this.discount != null){
+    		return this.discount.getBaseInfo();
+    	}
+    	throw new WxRuntimeException(999, "未支持的卡券类型！cardType:"+cardType);
+    }
 
     public String getCardType() {
         return cardType;

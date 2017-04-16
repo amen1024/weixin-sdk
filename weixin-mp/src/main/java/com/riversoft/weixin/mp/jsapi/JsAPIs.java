@@ -30,9 +30,24 @@ public class JsAPIs {
     private APITicket wxCardAPITicket;
 
     private WxClient wxClient;
+    
+    private static JsAPIs jsAPIs = null;
+    
+    private static String lock01 = "lock01_JsAPIs";
 
+    /**
+     * 单例
+     * @return
+     */
     public static JsAPIs defaultJsAPIs() {
-        return with(AppSetting.defaultSettings());
+    	if(jsAPIs == null){
+    		synchronized(lock01){ 
+    			if(jsAPIs == null){
+    				jsAPIs = with(AppSetting.defaultSettings());
+    			}
+    		}
+    	}
+        return jsAPIs;
     }
 
     public static JsAPIs with(AppSetting appSetting) {
@@ -49,6 +64,7 @@ public class JsAPIs {
         if(jsAPITicket == null || jsAPITicket.expired()) {//double check
             String url = WxEndpoint.get("url.jsapi.ticket.get");
             String response = wxClient.get(url);
+            logger.info("重新获取jsAPITicket！ response:"+response);
             this.jsAPITicket = APITicket.fromJson(response);
         }
     }
@@ -58,6 +74,7 @@ public class JsAPIs {
         if(wxCardAPITicket == null || wxCardAPITicket.expired()) {//double check
             String url = WxEndpoint.get("url.wxcard.jsapi.ticket.get");
             String response = wxClient.get(url);
+            logger.info("重新获取wxCardAPITicket！ response:"+response);
             this.wxCardAPITicket = APITicket.fromJson(response);
         }
     }
@@ -106,18 +123,20 @@ public class JsAPIs {
         String nonce = RandomStringGenerator.getRandomStringByLength(16);
         String ticket = wxCardAPITicket.getTicket();
 
-        List<String> parameters = new ArrayList<>();
+        List<String> parameters = new ArrayList<String>();
         if(wxCardAPISignature.isChooseCard()) {
             parameters.add(wxClient.getClientId());
         }
 
         parameters.add(ticket);
-        parameters.add(wxCardAPISignature.getCardId());
         parameters.add(nonce);
         parameters.add(String.valueOf(timestamp));
 
+        if(!(wxCardAPISignature.getCardId() == null || "".equals(wxCardAPISignature.getCardId()))) {
+            parameters.add(wxCardAPISignature.getCardId());
+        }
         if(!(wxCardAPISignature.getCardType() == null || "".equals(wxCardAPISignature.getCardType()))) {
-            parameters.add(wxCardAPISignature.getCardType());
+        	parameters.add(wxCardAPISignature.getCardType());
         }
         if(!(wxCardAPISignature.getCode() == null || "".equals(wxCardAPISignature.getCode()))) {
             parameters.add(wxCardAPISignature.getCode());
@@ -133,7 +152,7 @@ public class JsAPIs {
         }
 
         try {
-            String signature = SHA1.getSHA1((String[])parameters.toArray());
+            String signature = SHA1.getSHA1((String[])parameters.toArray(new String[parameters.size()]));
 
             wxCardAPISignature.setNonce(nonce);
             wxCardAPISignature.setTimestamp(timestamp);

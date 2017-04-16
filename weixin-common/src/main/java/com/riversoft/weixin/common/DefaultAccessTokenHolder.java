@@ -1,9 +1,14 @@
 package com.riversoft.weixin.common;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * @borball on 8/14/2016.
  */
 public class DefaultAccessTokenHolder extends AccessTokenHolder {
+	
+	private static Logger logger = LoggerFactory.getLogger(DefaultAccessTokenHolder.class);
 
     private AccessToken accessToken;
 
@@ -23,6 +28,7 @@ public class DefaultAccessTokenHolder extends AccessTokenHolder {
     public synchronized void refreshToken() {
         if (accessToken == null || accessToken.expired()) {
             String content = fetchAccessToken();
+            logger.info("刷新token! response:"+content);
             AccessToken accessToken = AccessToken.fromJson(content);
             this.accessToken = accessToken;
         }

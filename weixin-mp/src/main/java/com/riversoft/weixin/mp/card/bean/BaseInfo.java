@@ -98,7 +98,7 @@ public class BaseInfo {
      * 每人可领券的数量限制
      */
     @JsonProperty("get_limit")
-    private int getLimit;
+    private long getLimit;
 
     /**
      * 卡券领取页面是否可分享
@@ -176,6 +176,9 @@ public class BaseInfo {
      */
     @JsonProperty("need_push_on_view")
     private boolean needPushOnView;
+    
+    @JsonProperty("sub_merchant_info")
+    private SubMerchantInfo subMerchantInfo;
 
     public String getLogoUrl() {
         return logoUrl;
@@ -265,11 +268,27 @@ public class BaseInfo {
         this.sku = sku;
     }
 
-    public int getGetLimit() {
+    public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public long getGetLimit() {
         return getLimit;
     }
 
-    public void setGetLimit(int getLimit) {
+    public void setGetLimit(long getLimit) {
         this.getLimit = getLimit;
     }
 
@@ -377,7 +396,15 @@ public class BaseInfo {
         this.needPushOnView = needPushOnView;
     }
 
-    public static class DateInfo {
+    public SubMerchantInfo getSubMerchantInfo() {
+		return subMerchantInfo;
+	}
+
+	public void setSubMerchantInfo(SubMerchantInfo subMerchantInfo) {
+		this.subMerchantInfo = subMerchantInfo;
+	}
+
+	public static class DateInfo {
 
         /**
          * 使用时间的类型，仅支持填写1或2。1为固定日期区间，2为固定时长（自领取后按天算）。
@@ -455,7 +482,7 @@ public class BaseInfo {
 
         public enum DateInfoType {
 
-            DATE_TYPE_FIX_TIME_RANGE(1), DATE_TYPE_FIX_TERM(2);
+            DATE_TYPE_FIX_TIME_RANGE(1), DATE_TYPE_FIX_TERM(2),DATE_TYPE_PERMANENT (3);
 
             private int code;
 
@@ -513,5 +540,26 @@ public class BaseInfo {
         public void setTotalQuantity(int totalQuantity) {
             this.totalQuantity = totalQuantity;
         }
+    }
+    /**
+     * 子商户信息
+     */
+    public static class SubMerchantInfo {
+    	
+    	/**
+    	 * 数量
+    	 */
+    	@JsonProperty("merchant_id")
+    	private long merchantId;
+
+		public long getMerchantId() {
+			return merchantId;
+		}
+
+		public void setMerchantId(long merchantId) {
+			this.merchantId = merchantId;
+		}
+    	
+    	
     }
 }

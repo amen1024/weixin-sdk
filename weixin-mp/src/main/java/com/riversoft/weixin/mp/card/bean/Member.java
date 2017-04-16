@@ -356,8 +356,8 @@ public class Member extends AbstractCard {
         @JsonProperty("least_money_to_use_bonus")
         private int leastMoney2UseBonus;
 
-        @JsonProperty("least_money_to_use_bonus")
-        private int max_reduce_bonus;
+        @JsonProperty("max_reduce_bonus")
+        private int maxReduceBonus;
 
         public int getCostMoneyUnit() {
             return costMoneyUnit;
@@ -415,12 +415,13 @@ public class Member extends AbstractCard {
             this.leastMoney2UseBonus = leastMoney2UseBonus;
         }
 
-        public int getMax_reduce_bonus() {
-            return max_reduce_bonus;
-        }
+		public int getMaxReduceBonus() {
+			return maxReduceBonus;
+		}
 
-        public void setMax_reduce_bonus(int max_reduce_bonus) {
-            this.max_reduce_bonus = max_reduce_bonus;
-        }
+		public void setMaxReduceBonus(int maxReduceBonus) {
+			this.maxReduceBonus = maxReduceBonus;
+		}
+
     }
 }

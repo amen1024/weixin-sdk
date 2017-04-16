@@ -1,5 +1,6 @@
 package com.riversoft.weixin.mp.card;
 
+import com.ctc.wstx.util.StringUtil;
 import com.riversoft.weixin.common.WxClient;
 import com.riversoft.weixin.common.exception.WxRuntimeException;
 import com.riversoft.weixin.common.util.JsonMapper;
@@ -7,6 +8,8 @@ import com.riversoft.weixin.mp.MpWxClientFactory;
 import com.riversoft.weixin.mp.base.AppSetting;
 import com.riversoft.weixin.mp.base.WxEndpoint;
 import com.riversoft.weixin.mp.card.bean.*;
+
+import org.apache.commons.codec.binary.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -193,6 +196,28 @@ public class Cards {
             throw new WxRuntimeException(999, "create card failed.");
         }
     }
+    /**
+     * 获取代制卡的商户列表
+     *
+     * @param begin_id	起始的子商户id，一个母商户公众号下唯一
+				limit	拉取的子商户的个数，最大值为100
+				status	子商户审核状态，填入后，只会拉出当前状态的子商户
+			eg:{  "begin_id": 0,  "limit": 50,  "status": "CHECKING" }
+     * @return
+     */
+    public Merchants listMerchant(long beginId, int limit, String status) {
+    	Map<String, Object> request = new HashMap<>();
+    	request.put("begin_id", beginId);
+    	request.put("limit", limit);
+    	if (status != null) {
+    		request.put("status", status);
+    	}
+    	String url = WxEndpoint.get("url.card.submerchant.list");
+    	String json = JsonMapper.defaultMapper().toJson(request);
+    	String response = wxClient.post(url, json);
+    	
+    	return JsonMapper.defaultMapper().fromJson(response, Merchants.class);
+    }
 
     public Card get(String cardId) {
         String json = "{\"card_id\":\"%s\"}";
@@ -200,7 +225,7 @@ public class Cards {
 
         String url = WxEndpoint.get("url.card.get");
         String response = wxClient.post(url, String.format(json, cardId));
-
+logger.info(response);
         CardWrapper cardWrapper = JsonMapper.defaultMapper().fromJson(response, CardWrapper.class);
         return cardWrapper.getCard();
     }
@@ -294,5 +319,4 @@ public class Cards {
         }
 
     }
-
 }
