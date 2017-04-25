@@ -31,30 +31,41 @@ public class Card {
     @JsonProperty("discount")
     private Discount discount;
     
+    private AbstractCard getAbstractCard(){
+    	if(this.member != null){
+    		return this.member;
+    	}
+    	if(this.cash != null){
+    		return this.cash;
+    	}
+    	if(this.gift != null){
+    		return this.gift;
+    	}
+    	if(this.groupon != null){
+    		return this.groupon;
+    	}
+    	if(this.coupon != null){
+    		return this.coupon;
+    	}
+    	if(this.discount != null){
+    		return this.discount;
+    	}
+    	throw new WxRuntimeException(999, "未支持的卡券类型！cardType:"+cardType);
+    }
+    
     /**
      * 自动根据类型解析出baseInfo
      * @return
      */
     public BaseInfo getBaseInfo(){
-    	if(this.member != null){
-    		return this.member.getBaseInfo();
-    	}
-    	if(this.cash != null){
-    		return this.cash.getBaseInfo();
-    	}
-    	if(this.gift != null){
-    		return this.gift.getBaseInfo();
-    	}
-    	if(this.groupon != null){
-    		return this.groupon.getBaseInfo();
-    	}
-    	if(this.coupon != null){
-    		return this.coupon.getBaseInfo();
-    	}
-    	if(this.discount != null){
-    		return this.discount.getBaseInfo();
-    	}
-    	throw new WxRuntimeException(999, "未支持的卡券类型！cardType:"+cardType);
+    	return this.getAbstractCard().getBaseInfo();
+    }
+    /**
+     * 自动根据类型解析出AdvancedInfo
+     * @return
+     */
+    public AdvancedInfo getAdvancedInfo(){
+    	return this.getAbstractCard().getAdvancedInfo();
     }
 
     public String getCardType() {
